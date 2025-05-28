@@ -1,0 +1,41 @@
+@Library('csm-shared-library') _
+
+pipeline {
+    agent {
+        label "metal-gcp-builder"
+    }
+
+    options {
+        buildDiscarder(logRotator(numToKeepStr: "10"))
+        timestamps()
+    }
+
+    environment {
+        IS_STABLE = getBuildIsStable()
+
+        DESCRIPTION = "HPE Keycloak Chart"
+        CHART_NAME = "cray-keycloak"
+        CHART_VERSION = getChartVersion(name: env.CHART_NAME, isStable: env.IS_STABLE)
+
+    }
+
+    stages {
+        stage("Build") {
+            parallel {
+                stage('Chart') {
+                    steps {
+                        sh "make charts"
+                    }
+                }
+            }
+        }
+
+        stage('Publish ') {
+            steps {
+                script {
+                    publishCsmHelmCharts(component: env.CHART_NAME, chartsPath: "${WORKSPACE}/kubernetes/.packaged/${CHART_NAME}", isStable: env.IS_STABLE)
+                }
+            }
+        }
+    }
+}

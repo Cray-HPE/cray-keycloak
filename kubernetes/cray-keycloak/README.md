@@ -1,9 +1,3 @@
-# Project Name
-
-Cray-Keycloak
-
-## Description
-
 Deploys Keycloak
 
 Uses the community-supported Keycloak helm chart, see
@@ -32,16 +26,3 @@ When upgrading
 
 * Update the tag in the github link above.
 * check for NOTEs in the values.yaml
-
-## Contributing
-
-See the [CONTRIBUTING.md](CONTRIBUTING.md) file for how to contribute to this project.
-
-## Changelog
-
-See the [CHANGELOG.md](CHANGELOG.md) for the changes and release history of this project.
-
-
-## License
-
-This project is copyrighted by Hewlett Packard Enterprise Development LP and is distributed under the MIT license. See the [LICENSE.txt](LICENSE.txt) file for details.

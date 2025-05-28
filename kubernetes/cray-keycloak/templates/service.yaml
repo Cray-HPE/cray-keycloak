@@ -1,6 +1,7 @@
+{{/*
 MIT License
 
-(C) Copyright 2025 Hewlett Packard Enterprise Development LP
+(C) Copyright 2022 Hewlett Packard Enterprise Development LP
 
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the "Software"),
@@ -19,3 +20,22 @@ THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
 OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
+*/}}
+
+# This is for backwards compatibility and is deprecated.
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: keycloak
+  namespace: services
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/instance: cray-keycloak
+    app.kubernetes.io/name: keycloak
+  ports:
+  - name: http
+    port: 8080
+    protocol: TCP
+    targetPort: http
