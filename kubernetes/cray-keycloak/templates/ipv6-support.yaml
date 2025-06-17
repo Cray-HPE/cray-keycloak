@@ -1,0 +1,131 @@
+{{/*
+MIT License
+
+(C) Copyright 2023-2025 Hewlett Packard Enterprise Development LP
+
+Permission is hereby granted, free of charge, to any person obtaining a
+copy of this software and associated documentation files (the "Software"),
+to deal in the Software without restriction, including without limitation
+the rights to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Software, and to permit persons to whom the
+Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included
+in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+OTHER DEALINGS IN THE SOFTWARE.
+*/}}
+
+{{- if .Values.ipv6.enabled }}
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: keycloak-ipv6
+  labels:
+    {{- include "cray-keycloak.labels" . | nindent 4 }}
+  annotations:
+    helm.sh/hook: pre-install,pre-upgrade
+    helm.sh/resource-policy: keep
+    policies.kyverno.io/minversion: 1.6.0
+    policies.kyverno.io/subject: StatefulSet
+    policies.kyverno.io/title: Keycloak IPv6 support
+    policies.kyverno.io/description: |
+      This policy mutates the cray-keycloak StatefulSet resource and adds
+      the NetworkAttachmentDefinition annotation required for IPv6 support.
+      The policy also appends -Djava.net.preferIPv4Stack=false to the
+      JAVA_OPTS_APPEND environment variable as this is required for Keycloak
+      to be able to initiate IPv6 connections.
+spec:
+  admission: true
+  background: true
+  emitWarning: false
+  rules:
+  - match:
+      any:
+      - resources:
+          kinds:
+          - StatefulSet
+          names:
+          - cray-keycloak
+    mutate:
+      patchStrategicMerge:
+        spec:
+          template:
+            metadata:
+              annotations:
+                k8s.v1.cni.cncf.io/networks: cray-keycloak
+    name: add-network-attachment
+    skipBackgroundRequests: true
+  - match:
+      any:
+      - resources:
+          kinds:
+          - StatefulSet
+          names:
+          - cray-keycloak
+    mutate:
+      foreach:
+      - context:
+        - name: jreValue
+          variable:
+            jmesPath: element.env[?name=='JAVA_OPTS_APPEND'].value | [0]
+        list: request.object.spec.template.spec.containers
+        patchStrategicMerge:
+          spec:
+            template:
+              spec:
+                containers:
+                - env:
+                  - name: JAVA_OPTS_APPEND
+                    value: "{{`{{ jreValue }} -Djava.net.preferIPv4Stack=false`}}"
+                  name: keycloak
+        preconditions:
+          all:
+          - key: "{{`{{ element.name `}}}}" 
+            operator: Equals
+            value: keycloak
+          - key:  "{{`{{ jreValue `}}}}" 
+            operator: NotIn
+            value:
+            - '*-Djava.net.preferIPv4Stack=false*'
+    name: enable-keycloak-ipv6
+    skipBackgroundRequests: true
+  validationFailureAction: Audit
+---
+apiVersion: k8s.cni.cncf.io/v1
+kind: NetworkAttachmentDefinition
+metadata:
+  name: cray-keycloak
+  labels:
+    {{- include "cray-keycloak.labels" . | nindent 4 }}
+  annotations:
+    helm.sh/hook: pre-install,pre-upgrade
+    helm.sh/resource-policy: keep
+spec:
+  config: |
+    {
+      "cniVersion": "0.3.0",
+      "type": "macvlan",
+      "master": "{{ .Values.ipv6.interface }}",
+      "mode": "bridge",
+      "ipam": {
+        "type": "host-local",
+        "subnet": "{{ required "ipv6.subnet must be set if IPv6 support is enabled" .Values.ipv6.subnet }}",
+        "rangeStart": "{{ required "ipv6.rangeStart must be set if IPv6 support is enabled" .Values.ipv6.rangeStart }}",
+        "rangeEnd": "{{ required "ipv6.rangeEnd must be set if IPv6 support is enabled" .Values.ipv6.rangeEnd }}",
+        "routes": [
+          {
+            "dst": "::/0",
+            "gw": "{{ required "ipv6.gateway must be set if IPv6 support is enabled" .Values.ipv6.gateway }}"
+          }
+        ]
+      }
+    }
+{{- end }}

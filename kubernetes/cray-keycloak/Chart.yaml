@@ -24,7 +24,7 @@
 apiVersion: v2
 appVersion: 3.9.0
 name: cray-keycloak
-version: 5.2.1
+version: 5.3.1
 description: Deploys Keycloak for Shasta
 keywords:
 - keycloak
