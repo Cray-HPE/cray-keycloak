@@ -346,3 +346,18 @@ keycloakx:
       mountPath: /opt/keycloak/providers
     - name: themes
       mountPath: /opt/keycloak/themes
+
+# IPv6 related settings
+# enabled - toggle feature on/off.
+# interface - Physical interface to use for the NetworkAttachmentDefinition.
+# gateway - IPv6 default route. Typically the CMN gateway address.
+# subnet - IPv6 subnet in CIDR form.
+# rangeStart/rangeEnd - Pool of IPv6 addresses to use for the cray-keycloak pods. 
+#   This pool must be large enough to accomodate the configured number of replicas.
+ipv6:
+  enabled: false
+  interface: bond0.cmn0
+  gateway: ""
+  subnet: ""
+  rangeStart: ""
+  rangeEnd: ""
