@@ -192,14 +192,17 @@ keycloakx:
   command:
     - "/opt/keycloak/bin/kc.sh"
     - "start"
-    - "--http-enabled=true"
     - "--http-port=8080"
     - "--hostname-strict=false"
     - "--hostname-strict-https=false"
     - "--spi-truststore-file-file=/certs/certs.jks"
     - "--spi-truststore-file-password=password"
     - "--spi-truststore-file-hostname-verification-policy=WILDCARD"
-    - "--proxy-headers=xforwarded"
+  proxy:
+    enabled: true
+    mode: xforwarded
+    http:
+      enabled: true
   extraEnv: |
     - name: JAVA_OPTS_APPEND
       value: >-
@@ -312,6 +315,7 @@ keycloakx:
 
   http:
     relativePath: '/keycloak'
+    internalPort: http-internal
 
   resources:
     requests:
