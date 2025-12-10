@@ -5,7 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [6.0.0] - 2025-12-10
+### Updated
+- Upgrade keycloak to 24.0.5
+
 ## [5.1.4] - 2025-05-28
 ### Added
 - Initial release from new repo
-

@@ -188,7 +188,7 @@ keycloakx:
     traffic.sidecar.istio.io/excludeOutboundPorts: '7600'
   image:
     repository: artifactory.algol60.net/csm-docker/stable/quay.io/keycloak/keycloak
-    tag: 21.1.1
+    tag: 24.0.5
   command:
     - "/opt/keycloak/bin/kc.sh"
     - "start"
@@ -199,6 +199,7 @@ keycloakx:
     - "--spi-truststore-file-file=/certs/certs.jks"
     - "--spi-truststore-file-password=password"
     - "--spi-truststore-file-hostname-verification-policy=WILDCARD"
+    - "--proxy-headers=xforwarded"
   extraEnv: |
     - name: JAVA_OPTS_APPEND
       value: >-
@@ -213,10 +214,6 @@ keycloakx:
         secretKeyRef:
           name: keycloak-master-admin-auth
           key: password
-
-  proxy:
-    enabled: true
-    mode: passthrough
 
   serviceAccount:
     create: false

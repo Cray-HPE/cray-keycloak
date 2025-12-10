@@ -7,7 +7,7 @@ Cray-Keycloak
 Deploys Keycloak
 
 Uses the community-supported Keycloak helm chart, see
-https://github.com/codecentric/helm-charts/tree/keycloakx-2.1.0/charts/keycloakx
+https://github.com/codecentric/helm-charts/tree/keycloakx-2.3.0/charts/keycloakx
 
 Check the requirements.yaml/requirements.lock files for the current version.
 
