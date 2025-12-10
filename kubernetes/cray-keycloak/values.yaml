@@ -194,9 +194,9 @@ keycloakx:
     - "start"
     - "--http-port=8080"
     - "--hostname-strict=false"
-    - "--hostname-strict-https=false"
-    - "--truststore-paths=/certs/certs.jks"
-    - "--tls-hostname-verifier=DEFAULT"
+    - "--spi-truststore-file-file=/certs/certs.jks"
+    - "--spi-truststore-file-password=password"
+    - "--spi-truststore-file-hostname-verification-policy=WILDCARD"
   proxy:
     enabled: true
     mode: xforwarded
