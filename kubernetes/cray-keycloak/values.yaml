@@ -206,6 +206,7 @@ keycloakx:
     - name: JAVA_OPTS_APPEND
       value: >-
         -Djgroups.dns.query={{ include "keycloak.fullname" . }}-headless
+        -Dcom.arjuna.ats.arjuna.coordinator.defaultTimeout=300
     - name: KEYCLOAK_ADMIN
       valueFrom:
         secretKeyRef:
