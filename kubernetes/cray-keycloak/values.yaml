@@ -188,16 +188,15 @@ keycloakx:
     traffic.sidecar.istio.io/excludeOutboundPorts: '7600'
   image:
     repository: artifactory.algol60.net/csm-docker/unstable/quay.io/keycloak/keycloak
-    tag: 24.0.5
+    tag: 26.4.7
   command:
     - "/opt/keycloak/bin/kc.sh"
     - "start"
     - "--http-port=8080"
     - "--hostname-strict=false"
     - "--hostname-strict-https=false"
-    - "--spi-truststore-file-file=/certs/certs.jks"
-    - "--spi-truststore-file-password=password"
-    - "--spi-truststore-file-hostname-verification-policy=WILDCARD"
+    - "--truststore-paths=/certs/certs.jks"
+    - "--tls-hostname-verifier=DEFAULT"
   proxy:
     enabled: true
     mode: xforwarded
